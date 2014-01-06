@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 public class Experiment {
 
     private Logger logger = Logger.getAnonymousLogger();
-    private ExpirableHashtable eh;
+    private ExpirableHashtable<Long, Long> eh;
     private int size = 1000;  // size of table
     private int ttl = 1; // expire milliseconds
     private int duration = 10000; // how long to abuse the table
@@ -17,7 +17,7 @@ public class Experiment {
 
     private void setup() {
         logger.info("Setup...");
-        eh = new ExpirableHashtable();
+        eh = new ExpirableHashtable<Long, Long>();
         eh.setDefaultTtl((long)ttl);
         for (int i=0; i<size; i++) {
             eh.put((long)i, new Random().nextLong());

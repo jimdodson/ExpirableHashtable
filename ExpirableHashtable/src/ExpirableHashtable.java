@@ -1,6 +1,6 @@
 import java.util.Hashtable;
 
-public class ExpirableHashtable extends Hashtable {
+public class ExpirableHashtable<K, V> extends Hashtable<K, V> {
 
     private final Hashtable<Object, Long> ttl;
     private final Hashtable<Object, Long> lastUpdate;
@@ -14,7 +14,7 @@ public class ExpirableHashtable extends Hashtable {
     }
 
     @Override
-    public synchronized Object get(Object key) {
+    public synchronized V get(Object key) {
         if (super.get(key) != null) {
             if ((System.currentTimeMillis() - lastUpdate.get(key)) >= ttl.get(key)) {
                 super.remove(key);
@@ -30,12 +30,12 @@ public class ExpirableHashtable extends Hashtable {
 
     @Override
     @SuppressWarnings("unchecked")
-    public synchronized Object put(Object key, Object value) {
+    public synchronized V put(K key, V value) {
         return put(key,value, defaultTtl);
     }
 
     @SuppressWarnings("unchecked")
-    public synchronized Object put(Object key, Object value, long ttl) {
+    public synchronized V put(K key, V value, long ttl) {
         lastUpdate.put(key, System.currentTimeMillis());
         this.ttl.put(key, ttl);
         return super.put(key, value);
