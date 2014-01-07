@@ -32,7 +32,7 @@ public class Experiment {
         while (System.currentTimeMillis() - start < duration) {
             reads++;
             Long key = (long)new Random().nextInt(size - 1);
-            Long value = (Long)eh.get(key);
+            Long value = eh.get(key);
             if (value == null) {
                 expired++;
                 eh.put(key, new Random().nextLong());
