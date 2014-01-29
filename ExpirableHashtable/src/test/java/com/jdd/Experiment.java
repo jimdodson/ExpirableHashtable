@@ -1,3 +1,5 @@
+package com.jdd;
+
 import java.util.Random;
 import java.util.logging.Logger;
 

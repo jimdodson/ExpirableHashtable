@@ -1,10 +1,12 @@
+package com.jdd;
+
 import java.util.Hashtable;
 
 public class ExpirableHashtable<K, V> extends Hashtable<K, V> {
 
     private final Hashtable<Object, Long> ttl;
     private final Hashtable<Object, Long> lastUpdate;
-    private Long defaultTtl;
+    private long defaultTtl;
 
     public ExpirableHashtable() {
         super();
@@ -31,7 +33,7 @@ public class ExpirableHashtable<K, V> extends Hashtable<K, V> {
     @Override
     @SuppressWarnings("unchecked")
     public synchronized V put(K key, V value) {
-        return put(key,value, defaultTtl);
+        return put(key, value, defaultTtl);
     }
 
     @SuppressWarnings("unchecked")
@@ -39,6 +41,21 @@ public class ExpirableHashtable<K, V> extends Hashtable<K, V> {
         lastUpdate.put(key, System.currentTimeMillis());
         this.ttl.put(key, ttl);
         return super.put(key, value);
+    }
+
+    // todo throw real exceptions
+    public long getTtl(K key) throws RuntimeException {
+        if (super.get(key) != null) {
+            if ((System.currentTimeMillis() - lastUpdate.get(key)) < ttl.get(key)) {
+                return ttl.get(key);
+            }
+            else {
+                throw new RuntimeException("expired key");
+            }
+        }
+        else {
+            throw new RuntimeException("unknown key");
+        }
     }
 
     public String showLastUpdates() {
@@ -49,11 +66,11 @@ public class ExpirableHashtable<K, V> extends Hashtable<K, V> {
         return ttl.toString();
     }
 
-    public Long getDefaultTtl() {
+    public long getDefaultTtl() {
         return defaultTtl;
     }
 
-    public void setDefaultTtl(Long ttl) {
+    public void setDefaultTtl(long ttl) {
         this.defaultTtl = ttl;
     }
 
