@@ -43,18 +43,17 @@ public class ExpirableHashtable<K, V> extends Hashtable<K, V> {
         return super.put(key, value);
     }
 
-    // todo throw real exceptions
-    public long getTtl(K key) throws RuntimeException {
+    public long getTtl(K key) throws UnknownKeyException, ExpiredKeyException {
         if (super.get(key) != null) {
             if ((System.currentTimeMillis() - lastUpdate.get(key)) < ttl.get(key)) {
                 return ttl.get(key);
             }
             else {
-                throw new RuntimeException("expired key");
+                throw new ExpiredKeyException();
             }
         }
         else {
-            throw new RuntimeException("unknown key");
+            throw new UnknownKeyException();
         }
     }
 
