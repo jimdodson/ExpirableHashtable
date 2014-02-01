@@ -1,6 +1,5 @@
 package com.jdd;
 
-import com.jdd.ExpirableHashtable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,12 +16,12 @@ public class ExpirableHashtableTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         eh = new ExpirableHashtable<Long, Long>();
     }
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() throws InterruptedException {
         Long key = 1L;
         Long value = 1L;
         Assert.assertNull(eh.get(key));
@@ -33,7 +32,7 @@ public class ExpirableHashtableTest {
     }
 
     @Test
-    public void testGetTtl() throws RuntimeException {
+    public void testGetTtl() {
         Long key = 1L;
         Long value = 1L;
         eh.put(key, value);
@@ -41,7 +40,34 @@ public class ExpirableHashtableTest {
     }
 
     @Test
-    public void testPutKV() throws Exception {
+    public void testGetTllUnknownKey() {
+        try {
+            eh.getTtl(1L);
+            Assert.fail("should have thrown UnknownKeyException");
+        }
+        catch (UnknownKeyException e){
+
+        }
+    }
+
+    @Test
+    public void testGetTtlExpiredKey() throws InterruptedException {
+        Long key = 1L;
+        Long value = 1L;
+        long ttl = 1L;
+        eh.put(key, value, ttl);
+        Thread.sleep(ttl);
+        try {
+            eh.getTtl(key);
+            Assert.fail("should have thrown ExpiredKeyException");
+        }
+        catch (ExpiredKeyException e) {
+
+        }
+    }
+
+    @Test
+    public void testPutKV() {
         Long key = 1L;
         Long value = 1L;
         Assert.assertNull(eh.get(key));
@@ -52,7 +78,7 @@ public class ExpirableHashtableTest {
     }
 
     @Test
-    public void testPutKVTtl() throws Exception {
+    public void testPutKVTtl() {
         Long key = 1L;
         Long value = 1L;
         long ttl = 567L;
@@ -66,26 +92,25 @@ public class ExpirableHashtableTest {
     }
 
     @Test
-    public void testShowLastUpdates() throws Exception {
+    public void testShowLastUpdates() {
         addData();
-        System.out.println(eh.showLastUpdates());
+        Assert.assertNotNull(eh.showLastUpdates());
     }
 
     @Test
-    public void testShowTtls() throws Exception {
+    public void testShowTtls() {
         addData();
-        System.out.println(eh.showTtls());
+        Assert.assertNotNull(eh.showTtls());
     }
 
     @Test
-    public void testGetDefaultTtl() throws Exception {
+    public void testGetDefaultTtl() {
         Assert.assertEquals(500L, eh.getDefaultTtl());
     }
 
     @Test
-    public void testSetDefaultTtl() throws Exception {
+    public void testSetDefaultTtl() {
         long ttl = 123L;
-        Long defaultTtl = eh.getDefaultTtl();
         eh.setDefaultTtl(ttl);
         Assert.assertEquals(ttl, eh.getDefaultTtl());
     }
